@@ -1,0 +1,126 @@
+{% extends "_layout.html" %}
+{% set title = "Settings" %}
+{% block content %}
+
+<div class="card">
+  <h2>Settings Identitas Sekolah</h2>
+  <p class="muted">Data ini dipakai untuk PDF BKP dan PDF BAST.</p>
+
+  <form method="POST" style="margin-top:14px;">
+    <div class="row">
+      <div class="field" style="min-width:300px;">
+        <label>Nama Sekolah</label>
+        <input type="text" name="nama_sekolah" value="{{ settings.nama_sekolah }}">
+      </div>
+      <div class="field" style="min-width:200px;">
+        <label>NPSN</label>
+        <input type="text" name="npsn" value="{{ settings.npsn }}">
+      </div>
+      <div class="field" style="min-width:220px;">
+        <label>Kab/Kota</label>
+        <input type="text" name="kab_kota" value="{{ settings.kab_kota }}">
+      </div>
+      <div class="field" style="min-width:160px;">
+        <label>Tahun</label>
+        <input type="text" name="tahun" value="{{ settings.tahun }}">
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="field" style="min-width:720px;">
+        <label>Alamat</label>
+        <input type="text" name="alamat" value="{{ settings.alamat }}">
+      </div>
+      <div class="field" style="min-width:220px;">
+        <label>Tempat TTD</label>
+        <input type="text" name="tempat_ttd" value="{{ settings.tempat_ttd }}">
+      </div>
+    </div>
+
+    <hr class="line">
+
+    <div class="row">
+      <div class="field" style="min-width:260px;">
+        <label>Kepala Sekolah (Nama)</label>
+        <input type="text" name="kepala_sekolah_nama" value="{{ settings.kepala_sekolah_nama }}">
+      </div>
+      <div class="field" style="min-width:220px;">
+        <label>Kepala Sekolah (NIP)</label>
+        <input type="text" name="kepala_sekolah_nip" value="{{ settings.kepala_sekolah_nip }}">
+      </div>
+      <div class="field" style="min-width:260px;">
+        <label>Bendahara (Nama)</label>
+        <input type="text" name="bendahara_nama" value="{{ settings.bendahara_nama }}">
+      </div>
+      <div class="field" style="min-width:220px;">
+        <label>Bendahara (NIP)</label>
+        <input type="text" name="bendahara_nip" value="{{ settings.bendahara_nip }}">
+      </div>
+    </div>
+
+    <hr class="line">
+
+    <h2 style="margin-top:0;">BAST SIPLah (Opsional)</h2>
+    <p class="muted">Dipakai untuk identitas PIHAK PERTAMA dan PIHAK KEDUA pada PDF BAST.</p>
+
+    <div class="row">
+      <div class="field" style="min-width:260px;">
+        <label>PIHAK 1 - Nama</label>
+        <input type="text" name="pihak1_nama" value="{{ settings.pihak1_nama }}">
+      </div>
+      <div class="field" style="min-width:260px;">
+        <label>PIHAK 1 - Jabatan</label>
+        <input type="text" name="pihak1_jabatan" value="{{ settings.pihak1_jabatan }}">
+      </div>
+      <div class="field" style="min-width:320px;">
+        <label>PIHAK 1 - Perusahaan</label>
+        <input type="text" name="pihak1_perusahaan" value="{{ settings.pihak1_perusahaan }}">
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="field" style="min-width:520px;">
+        <label>PIHAK 1 - Alamat</label>
+        <input type="text" name="pihak1_alamat" value="{{ settings.pihak1_alamat }}">
+      </div>
+      <div class="field" style="min-width:260px;">
+        <label>PIHAK 1 - Telp</label>
+        <input type="text" name="pihak1_telp" value="{{ settings.pihak1_telp }}">
+      </div>
+    </div>
+
+    <hr class="line">
+
+    <div class="row">
+      <div class="field" style="min-width:260px;">
+        <label>PIHAK 2 - Nama</label>
+        <input type="text" name="pihak2_nama" value="{{ settings.pihak2_nama }}">
+      </div>
+      <div class="field" style="min-width:260px;">
+        <label>PIHAK 2 - Jabatan</label>
+        <input type="text" name="pihak2_jabatan" value="{{ settings.pihak2_jabatan }}">
+      </div>
+      <div class="field" style="min-width:320px;">
+        <label>PIHAK 2 - Nama Satdik</label>
+        <input type="text" name="pihak2_nama_satdik" value="{{ settings.pihak2_nama_satdik }}">
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="field" style="min-width:520px;">
+        <label>PIHAK 2 - Alamat</label>
+        <input type="text" name="pihak2_alamat" value="{{ settings.pihak2_alamat }}">
+      </div>
+      <div class="field" style="min-width:260px;">
+        <label>PIHAK 2 - Telp</label>
+        <input type="text" name="pihak2_telp" value="{{ settings.pihak2_telp }}">
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:14px;">
+      <button class="btn" type="submit">💾 Simpan</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

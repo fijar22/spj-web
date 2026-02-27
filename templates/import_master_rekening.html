@@ -1,0 +1,22 @@
+{% extends "_layout.html" %}
+{% set title = "Import Master Rekening" %}
+{% block content %}
+
+<div class="card">
+  <h2>Import Master Rekening</h2>
+  <p class="muted">File .xlsx harus memiliki kolom: <b>kode_rekening_belanja</b>, <b>nama_rekening_belanja</b>, <b>rekap_rekening_belanja</b>. Import = replace.</p>
+
+  <form method="POST" enctype="multipart/form-data" style="margin-top:14px;">
+    <div class="row">
+      <div class="field" style="min-width:380px;">
+        <label>Pilih File .xlsx</label>
+        <input type="file" name="file" accept=".xlsx">
+      </div>
+
+      <button class="btn" type="submit">📥 Import</button>
+      <a class="btn secondary" href="/import">← Kembali</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends "_layout.html" %}
+{% set title = "BAST " ~ bpu %}
+{% block content %}
+
+<div class="card">
+  <div class="row" style="justify-content:space-between; align-items:center;">
+    <div>
+      <h2 style="margin:0;">Berita Acara Serah Terima (BAST)</h2>
+      <p class="muted" style="margin:6px 0 0 0;">
+        No Bukti (BPU): <b>{{ bpu }}</b>
+        &nbsp;•&nbsp; Total Pengeluaran: <b>{{ "{:,.0f}".format(total_out).replace(",", ".") }}</b>
+      </p>
+    </div>
+    <div class="row">
+      <a class="btn" href="/bast/{{ bpu }}/pdf">⬇️ Download PDF BAST</a>
+      <a class="btn secondary" href="/bkp/{{ bpu }}/pdf">🧾 Download PDF BKP</a>
+      <a class="btn secondary" href="/spj-bpu">← Kembali</a>
+    </div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h2>Ringkasan</h2>
+    <div style="display:grid; grid-template-columns: 190px 1fr; gap:8px; font-size:13px;">
+      <div><b>Tanggal</b></div><div>{{ header.Tgl }}</div>
+      <div><b>Kegiatan</b></div><div>{{ header.NamaKegiatan or header.Keg }}</div>
+      <div><b>Rekap Rekening</b></div><div>{{ header.RekapRekening or "-" }}</div>
+      <div><b>Jumlah Pengeluaran</b></div><div><b>{{ "Rp {:,.0f}".format(total_out).replace(",", ".") }}</b></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Override Data & Pihak 1</h2>
+    <form method="POST">
+      <input type="hidden" name="action" value="save_override">
+      
+      <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div class="field">
+          <label>Kegiatan (Override)</label>
+          <input type="text" name="kegiatan_override" value="{{ override.kegiatan_override or '' }}" placeholder="Nama kegiatan di PDF...">
+        </div>
+        <div class="field">
+          <label>Nama Pihak 1</label>
+          <input type="text" name="pihak1_nama" value="{{ override.p1_nama or '' }}">
+        </div>
+        <div class="field">
+          <label>Jabatan</label>
+          <input type="text" name="pihak1_jabatan" value="{{ override.p1_jabatan or '' }}">
+        </div>
+        <div class="field">
+          <label>Perusahaan/Toko</label>
+          <input type="text" name="pihak1_perusahaan" value="{{ override.p1_perusahaan or '' }}">
+        </div>
+        
+        <div class="field">
+          <label>Alamat Pihak 1</label>
+          <input type="text" name="pihak1_alamat" value="{{ override.p1_alamat or '' }}">
+        </div>
+        <div class="field">
+          <label>No. Telepon Pihak 1</label>
+          <input type="text" name="pihak1_telp" value="{{ override.p1_telp or '' }}">
+        </div>
+      </div>
+      
+      <button type="submit" class="btn" style="margin-top:15px; width:100%;">💾 Simpan Data Override</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Rincian Transaksi BKU</h2>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>No</th><th>Tgl</th><th>Rek</th><th>Nama Rekening</th><th>Uraian</th><th>Out</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ r['Tgl'] }}</td>
+          <td>{{ r['Rek'] }}</td>
+          <td>{{ r['NamaRekening'] }}</td>
+          <td>{{ r['Uraian'] }}</td>
+          <td>{{ r['Out'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if detail and detail|length > 0 %}
+  <hr class="line">
+  <h2>Rincian Barang/Jasa (BHP/BHM)</h2>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>No</th><th>ID Barang</th><th>Uraian</th><th>Jumlah</th><th>Harga Satuan</th><th>Realisasi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in detail %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ d["ID Barang"] or d["[ID Barang]"] }}</td>
+          <td>{{ d["Uraian"] or d["[Uraian]"] }}</td>
+          <td>{{ d["Jumlah Barang"] or d["[Jumlah Barang]"] }}</td>
+          <td>{{ d["Harga Satuan"] or d["[Harga Satuan]"] }}</td>
+          <td>{{ d["Realisasi"] or d["[Realisasi]"] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <div class="row" style="justify-content:space-between; align-items:center;">
+    <h2>Foto Dokumentasi</h2>
+    <form method="POST" enctype="multipart/form-data" class="row" style="gap:10px;">
+      <input type="hidden" name="action" value="upload_photo">
+      <input type="file" name="photo" accept="image/*" required>
+      <button type="submit" class="btn secondary">📤 Upload Foto</button>
+    </form>
+  </div>
+
+  {% if photos and photos|length > 0 %}
+    <div class="tablewrap" style="margin-top:15px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Preview</th>
+            <th>File</th>
+            <th>Uploaded At</th>
+            <th style="width:100px;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in photos %}
+          <tr>
+            <td>
+              <a href="{{ p.url }}" target="_blank">
+                <img src="{{ p.url }}" style="width:100px; height:auto; border-radius:5px; border:1px solid #444;">
+              </a>
+            </td>
+            <td>{{ p.filename }}</td>
+            <td>{{ p.uploaded_at }}</td>
+            <td>
+               <form method="POST" action="{{ url_for('main.delete_photo', bpu=bpu, photo_id=p.id) }}" onsubmit="return confirm('Hapus foto ini?');">
+                <button class="btn secondary" style="color:#ff5555;" type="submit">🗑️ Hapus</button>
+               </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="muted">Belum ada foto yang diunggah.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

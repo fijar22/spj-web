@@ -1,0 +1,30 @@
+{% extends "_layout.html" %}
+{% set title = "Import Output Excel" %}
+{% block content %}
+
+<div class="card">
+  <h2>Import Output Excel (BKU + BHP_BHM)</h2>
+  <p class="muted">File harus .xlsx dan memiliki sheet: <b>BKU</b> dan/atau <b>BHP_BHM</b>.</p>
+
+  <form method="POST" enctype="multipart/form-data" style="margin-top:14px;">
+    <div class="row">
+      <div class="field" style="min-width:220px;">
+        <label>Mode</label>
+        <select name="mode">
+          <option value="append">Append</option>
+          <option value="replace">Replace</option>
+        </select>
+      </div>
+
+      <div class="field" style="min-width:380px;">
+        <label>Pilih File .xlsx</label>
+        <input type="file" name="file" accept=".xlsx">
+      </div>
+
+      <button class="btn" type="submit">⬆️ Import</button>
+      <a class="btn secondary" href="/import">← Kembali</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cetak BAST {{ bpu }}</title>
+    <style>
+        body{
+            font-family: Arial;
+            padding: 30px;
+            color: #000;
+        }
+        h2{
+            text-align:center;
+            margin-bottom: 10px;
+        }
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:15px;
+        }
+        th, td{
+            border:1px solid #000;
+            padding:6px;
+            font-size:13px;
+        }
+        th{
+            background:#f0f0f0;
+        }
+        .total{
+            margin-top:15px;
+            font-size:14px;
+            text-align:right;
+        }
+        .ttd{
+            margin-top:60px;
+            width:300px;
+            float:right;
+            text-align:center;
+        }
+        @media print{
+            button{display:none;}
+        }
+    </style>
+</head>
+<body>
+
+<button onclick="window.print()">🖨️ Print</button>
+
+<h2>BERITA ACARA SERAH TERIMA (BAST)</h2>
+<h3 style="text-align:center;">Nomor: {{ bpu }}</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Tanggal</th>
+            <th>Nama Kegiatan</th>
+            <th>Rekening</th>
+            <th>Uraian</th>
+            <th>Jumlah</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in data %}
+        <tr>
+            <td>{{ r["Tgl"] }}</td>
+            <td>{{ r["NamaKegiatan"] }}</td>
+            <td>{{ r["NamaRekening"] }}</td>
+            <td>{{ r["Uraian"] }}</td>
+            <td style="text-align:right;">
+                {{ "{:,.0f}".format(r["Out"] or 0).replace(",", ".") }}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="total">
+    <b>Total Pengeluaran: 
+        {{ "{:,.0f}".format(total).replace(",", ".") }}
+    </b>
+</div>
+
+<div class="ttd">
+    Bendahara,<br><br><br><br>
+    ________________________
+</div>
+
+</body>
+</html>

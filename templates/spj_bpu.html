@@ -1,0 +1,107 @@
+{% extends "_layout.html" %}
+{% set title = "SPJ per BPU" %}
+{% block content %}
+
+<div class="card">
+  <h2>Daftar SPJ per BPU (Digabung)</h2>
+  <p class="muted">Satu baris = satu BPU. Total = penjumlahan Out untuk BPU yang sama. Tombol cetak ada di sini.</p>
+
+  <form method="GET" style="margin-top:14px;">
+    <input type="hidden" name="page" value="1">
+    <div class="row">
+      <div class="field" style="min-width:220px;">
+        <label>Keyword BPU</label>
+        <input type="text" name="keyword" placeholder="misal: BPU91" value="{{ filters.keyword }}">
+      </div>
+
+      <div class="field" style="min-width:300px;">
+        <label>Kegiatan</label>
+        <select name="kegiatan">
+          <option value="__ALL__">Semua</option>
+          {% for k in kegiatan_list %}
+            <option value="{{ k }}" {% if filters.kegiatan == k %}selected{% endif %}>{{ k }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field" style="min-width:240px;">
+        <label>Rekap Rekening</label>
+        <select name="rekap">
+          <option value="__ALL__">Semua</option>
+          {% for r in rekap_list %}
+            <option value="{{ r }}" {% if filters.rekap == r %}selected{% endif %}>{{ r }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+    <div class="field">
+      <label>Bulan</label>
+      <select name="bulan">
+        <option value="__ALL__" {% if filters.bulan == "__ALL__" %}selected{% endif %}>Semua</option>
+        {% for ym in bulan_list %}
+          <option value="{{ ym }}" {% if filters.bulan == ym %}selected{% endif %}>{{ ym }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div style="font-size:12px; opacity:.7; margin-top:6px;">
+      Debug bulan_list: {{ bulan_list|length }} item
+    </div>
+
+      <div class="field">
+        <label>Baris / Halaman</label>
+        <select name="per_page">
+          {% for n in [25,50,100,200] %}
+            <option value="{{ n }}" {% if pagination.per_page == n %}selected{% endif %}>{{ n }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button class="btn" type="submit">🔎 Terapkan</button>
+      <a class="btn secondary" href="/spj-bpu">Reset</a>
+    </div>
+  </form>
+
+  <div class="kpi">
+    <div class="box"><small>Total BPU (hasil filter)</small><b>{{ summary.rows }}</b></div>
+    <div class="box"><small>Total Out (halaman)</small><b>{{ "{:,.0f}".format(summary.total_out).replace(",", ".") }}</b></div>
+    <div class="box"><small>Halaman</small><b>{{ pagination.page }} / {{ pagination.total_pages }}</b></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin:0;">Tabel SPJ per BPU</h2>
+  <p class="muted" style="margin:6px 0 0 0;">Halaman {{ pagination.page }} / {{ pagination.total_pages }}</p>
+
+  <div class="tablewrap" style="margin-top:10px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Tgl</th><th>BPU</th><th>Nama Kegiatan</th><th>Rekap Rekening</th><th>Uraian (gabungan)</th><th>Total Out</th>
+          <th style="min-width:260px;">Cetak</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          <td>{{ row["Tgl"] }}</td>
+          <td><b>{{ row["Bukti"] }}</b></td>
+          <td>{{ row["NamaKegiatan"] }}</td>
+          <td>{{ row["RekapRekening"] }}</td>
+          <td>{{ row["UraianGabung"] }}</td>
+          <td><b>{{ "{:,.0f}".format(row["TotalOut"] or 0).replace(",", ".") }}</b></td>
+          <td>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <a class="btn secondary" href="/bpu/{{ row['Bukti'] }}/edit">✏️ Edit BPU</a>
+              <a class="btn secondary" href="/bast/{{ row['Bukti'] }}">📂 BAST</a>
+              <a class="btn secondary" href="/bast/{{ row['Bukti'] }}/pdf">📄 PDF BAST</a>
+              <a class="btn secondary" href="/bkp/{{ row['Bukti'] }}/pdf">🧾 PDF BKP</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

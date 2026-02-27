@@ -1,0 +1,187 @@
+{% extends "_layout.html" %}
+{% set title = "Edit BPU " ~ bpu %}
+
+{% block content %}
+<style>
+  /* Styling untuk Autocomplete Suggestion */
+  .suggest {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #2c2c2c; 
+    border: 1px solid rgba(255,255,255,0.1);
+    border-top: none;
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+  .suggest-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.2s;
+  }
+  .suggest-item:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  .suggest-item .small {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+  }
+</style>
+
+<div class="card">
+  <h2>Edit BPU: {{ bpu }}</h2>
+  <form method="POST" enctype="multipart/form-data">
+    
+    <div class="field" style="min-width:420px;">
+      <label>Edit Nama Kegiatan (untuk BKP/BAST)</label>
+      <input type="text"
+             name="kegiatan_override"
+             value="{{ override.kegiatan_override if override.kegiatan_override else kegiatan_asli }}">
+    </div>
+
+    <div style="height:10px;"></div>
+    <h3 style="margin:10px 0 6px 0;">PIHAK PERTAMA (Per BPU)</h3>
+
+    <div class="row">
+      <div class="field" style="position:relative; min-width:260px;">
+        <label>Nama</label>
+        <input id="p1_nama" 
+               type="text" 
+               name="pihak1_nama" 
+               value="{{ override.pihak1_nama or '' }}" 
+               autocomplete="off">
+        <div id="p1_suggest" class="suggest" style="display:none;"></div>
+      </div>
+
+      <div class="field" style="min-width:220px;">
+        <label>Jabatan</label>
+        <input id="p1_jabatan" type="text" name="pihak1_jabatan" value="{{ override.pihak1_jabatan or '' }}">
+      </div>
+
+      <div class="field" style="min-width:280px;">
+        <label>Perusahaan</label>
+        <input id="p1_perusahaan" type="text" name="pihak1_perusahaan" value="{{ override.pihak1_perusahaan or '' }}">
+      </div>
+
+      <div class="field">
+        <label>Alamat</label>
+        <input id="p1_alamat" type="text" name="pihak1_alamat" value="{{ override.pihak1_alamat or '' }}">
+      </div>
+
+      <div class="field">
+        <label>No. Telepon</label>
+        <input id="p1_telp" type="text" name="pihak1_telp" value="{{ override.pihak1_telp or '' }}">
+      </div>
+    </div>
+
+    <div style="height:14px;"></div>
+    <h3 style="margin:10px 0 6px 0;">Upload Foto Barang</h3>
+    <input type="file" name="photo">
+
+    <div style="height:14px;"></div>
+    <div class="row">
+      <button class="btn" type="submit">💾 Simpan</button>
+      <a class="btn secondary" href="/spj-bpu">← Kembali</a>
+      <a class="btn secondary" href="/bast/{{ bpu }}">📂 BAST</a>
+      <a class="btn secondary" href="/bast/{{ bpu }}/pdf">📄 PDF BAST</a>
+    </div>
+  </form>
+</div>
+
+{% if photos and photos|length %}
+<div class="card">
+  <h2>Foto yang sudah diupload</h2>
+  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+    {% for p in photos %}
+      <div style="border:1px solid rgba(255,255,255,.09); border-radius:12px; padding:10px; width:220px;">
+        <img src="{{ p.url }}" style="width:100%; height:150px; object-fit: cover; display:block; border-radius:10px;">
+        <div class="muted" style="font-size:12px; margin-top:6px; word-break: break-all;">{{ p.filename }}</div>
+        <div class="muted" style="font-size:12px;">{{ p.uploaded_at }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+(function(){
+  const inp = document.getElementById("p1_nama");
+  const box = document.getElementById("p1_suggest");
+
+  // Input fields untuk diisi otomatis
+  const p1_jabatan = document.getElementById("p1_jabatan");
+  const p1_perusahaan = document.getElementById("p1_perusahaan");
+  const p1_alamat = document.getElementById("p1_alamat");
+  const p1_telp = document.getElementById("p1_telp");
+
+  let timer = null;
+
+  function hideBox(){ box.style.display="none"; box.innerHTML=""; }
+
+  function showItems(items){
+    if(!items || items.length === 0){ hideBox(); return; }
+    
+    box.innerHTML = items.map((it, index) => `
+      <div class="suggest-item" data-idx="${index}">
+        <b>${it.nama}</b>
+        <span class="small">${(it.perusahaan||"-")} • ${(it.jabatan||"-")}</span>
+      </div>
+    `).join("");
+    
+    box.style.display="block";
+    // Simpan data di window agar tidak bermasalah dengan quote/tanda petik
+    window._currentSuggestions = items;
+  }
+
+  // Event Input dengan Debounce (300ms)
+  inp.addEventListener("input", () => {
+    const q = (inp.value || "").trim();
+    if(timer) clearTimeout(timer);
+    
+    if(q.length < 3){ hideBox(); return; }
+
+    timer = setTimeout(async () => {
+      try{
+        const res = await fetch(`/api/pihak1/search?q=${encodeURIComponent(q)}`);
+        const items = await res.json();
+        showItems(items);
+      }catch(e){
+        console.error("Fetch error:", e);
+        hideBox();
+      }
+    }, 300);
+  });
+
+  // Pilih item dari list
+  box.addEventListener("click", (e) => {
+    const item = e.target.closest(".suggest-item");
+    if(!item) return;
+    
+    const idx = item.getAttribute("data-idx");
+    const data = window._currentSuggestions[idx];
+
+    // Masukkan data ke input
+    inp.value = data.nama || "";
+    if(p1_jabatan) p1_jabatan.value = data.jabatan || "";
+    if(p1_perusahaan) p1_perusahaan.value = data.perusahaan || "";
+    if(p1_alamat) p1_alamat.value = data.alamat || "";
+    if(p1_telp) p1_telp.value = data.telp || "";
+
+    hideBox();
+  });
+
+  // Klik di luar untuk menutup box
+  document.addEventListener("click", (e) => {
+    if(e.target !== inp && !box.contains(e.target)) hideBox();
+  });
+})();
+</script>
+
+{% endblock %}

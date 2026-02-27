@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title if title else "SISTEM SPJ BERBASIS WEB" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          SISTEM SPJ BERBASIS WEB
+          <div class="muted" style="font-weight:700; font-size:12px;">BKU • BHP/BHM • SPJ per BPU • Convert • Import • Settings</div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <a class="tab {% if request.path == '/' %}active{% endif %}" href="/">📘 BKU</a>
+        <a class="tab {% if request.path.startswith('/bhp') %}active{% endif %}" href="/bhp">📗 BHP/BHM</a>
+        <a class="tab {% if request.path.startswith('/spj-bpu') %}active{% endif %}" href="/spj-bpu">🧾 SPJ per BPU</a>
+        <a class="tab {% if request.path.startswith('/convert') %}active{% endif %}" href="/convert">📄 Convert PDF</a>
+        <a class="tab {% if request.path.startswith('/import') %}active{% endif %}" href="/import">⬆️ Import</a>
+        <a class="tab {% if request.path.startswith('/settings') %}active{% endif %}" href="/settings">⚙️ Settings</a>
+      </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="footer">
+      Developer: <b>Fijar Alfani Edyawan</b> | Email: fijarmercuri@gmail.com
+    </footer>
+  </div>
+</body>
+</html>

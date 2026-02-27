@@ -1,0 +1,22 @@
+{% extends "_layout.html" %}
+{% set title = "Menu Import" %}
+{% block content %}
+
+<div class="card">
+  <h2>Menu Import</h2>
+  <p class="muted">Pilih jenis data yang ingin diimport.</p>
+
+  <div class="row" style="margin-top:12px;">
+    <a class="btn secondary" href="/import/output">⬆️ Import Output Excel (BKU + BHP_BHM)</a>
+    <a class="btn secondary" href="/import/master/kegiatan">📥 Import Master Kegiatan</a>
+    <a class="btn secondary" href="/import/master/rekening">📥 Import Master Rekening</a>
+  </div>
+
+  <hr class="line">
+
+  <form method="POST" action="/import/reset-data" onsubmit="return confirm('Yakin reset semua data BKU dan BHP/BHM?');">
+    <button class="btn danger" type="submit">🗑️ Reset Data BKU & BHP/BHM</button>
+  </form>
+</div>
+
+{% endblock %}

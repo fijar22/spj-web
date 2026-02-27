@@ -1,0 +1,55 @@
+{% extends "_layout.html" %}
+{% set title = "Convert PDF" %}
+{% block content %}
+
+<div class="card">
+  <h2>Convert PDF ➜ Excel / Import ke Database</h2>
+  <p class="muted">Upload PDF BKU dan/atau PDF BHP/BHM. Bisa download Excel hasil convert atau langsung import ke database.</p>
+
+  <form method="POST" action="/convert/run" enctype="multipart/form-data" style="margin-top:14px;">
+    <div class="row">
+      <div class="field" style="min-width:220px;">
+        <label>Mode</label>
+        <select name="mode">
+          <option value="both">BKU + BHP/BHM</option>
+          <option value="bku">BKU saja</option>
+          <option value="bhp">BHP/BHM saja</option>
+        </select>
+      </div>
+
+      <div class="field" style="min-width:220px;">
+        <label>Mode Import DB</label>
+        <select name="db_mode">
+          <option value="append">Append</option>
+          <option value="replace">Replace</option>
+        </select>
+      </div>
+
+      <div class="field" style="min-width:220px;">
+        <label>Langsung import ke DB?</label>
+        <select name="import_now">
+          <option value="0">Tidak (download Excel)</option>
+          <option value="1">Ya (import DB)</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="line">
+
+    <div class="row">
+      <div class="field" style="min-width:360px;">
+        <label>PDF BKU (boleh banyak)</label>
+        <input type="file" name="bku_pdfs" accept="application/pdf" multiple>
+      </div>
+
+      <div class="field" style="min-width:360px;">
+        <label>PDF BHP/BHM (boleh banyak)</label>
+        <input type="file" name="bhp_pdfs" accept="application/pdf" multiple>
+      </div>
+
+      <button class="btn" type="submit">⚙️ Proses</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

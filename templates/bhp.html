@@ -1,0 +1,120 @@
+{% extends "_layout.html" %}
+{% set title = "BHP/BHM" %}
+{% block content %}
+
+<div class="card">
+  <h2>Data BHP/BHM</h2>
+
+  <form method="GET" style="margin-top:14px;">
+    <input type="hidden" name="page" value="1">
+    <div class="row">
+      <div class="field" style="min-width:220px;">
+        <label>Keyword No Bukti</label>
+        <input type="text" name="keyword" placeholder="misal: BPU91" value="{{ filters.keyword }}">
+      </div>
+
+      <div class="field" style="min-width:300px;">
+        <label>Kegiatan</label>
+        <select name="kegiatan">
+          <option value="__ALL__">Semua</option>
+          {% for k in kegiatan_list %}
+            <option value="{{ k }}" {% if filters.kegiatan == k %}selected{% endif %}>{{ k }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field" style="min-width:240px;">
+        <label>Rekap Rekening</label>
+        <select name="rekap">
+          <option value="__ALL__">Semua</option>
+          {% for r in rekap_list %}
+            <option value="{{ r }}" {% if filters.rekap == r %}selected{% endif %}>{{ r }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="field" style="min-width:160px;">
+        <label>Tgl dari</label>
+        <input type="date" name="tgl_from" value="{{ filters.tgl_from }}">
+      </div>
+      <div class="field" style="min-width:160px;">
+        <label>Tgl s/d</label>
+        <input type="date" name="tgl_to" value="{{ filters.tgl_to }}">
+      </div>
+
+      <div class="field">
+        <label>Baris / Halaman</label>
+        <select name="per_page">
+          {% for n in [25,50,100,200] %}
+            <option value="{{ n }}" {% if pagination.per_page == n %}selected{% endif %}>{{ n }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button class="btn" type="submit">🔎 Terapkan</button>
+      <a class="btn secondary" href="/bhp">Reset</a>
+    </div>
+  </form>
+
+  <div class="kpi">
+    <div class="box"><small>Total Baris (hasil filter)</small><b>{{ summary.rows }}</b></div>
+    <div class="box"><small>Total Jumlah Barang (halaman)</small><b>{{ "{:,.0f}".format(summary.total_jumlah_barang).replace(",", ".") }}</b></div>
+    <div class="box"><small>Total Realisasi (halaman)</small><b>{{ "{:,.0f}".format(summary.total_realisasi).replace(",", ".") }}</b></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin:0;">Tabel BHP/BHM</h2>
+  <p class="muted" style="margin:6px 0 0 0;">Halaman {{ pagination.page }} / {{ pagination.total_pages }}</p>
+
+  <div class="tablewrap" style="margin-top:10px;">
+    <table>
+      <thead>
+        <tr>
+          <th>Tanggal</th><th>Kode Kegiatan</th><th>Nama Kegiatan</th><th>Kode Rekening</th><th>Rekap Rekening</th>
+          <th>No Bukti</th><th>ID Barang</th><th>Uraian</th><th>Jumlah</th><th>Harga</th><th>Realisasi</th><th>Sumber</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          <td>{{ row["Tanggal"] }}</td>
+          <td>{{ row["Kode Kegiatan"] }}</td>
+          <td>{{ row["NamaKegiatan"] }}</td>
+          <td>{{ row["Kode Rekening"] }}</td>
+          <td>{{ row["RekapRekening"] }}</td>
+          <td><b>{{ row["No Bukti"] }}</b></td>
+          <td>{{ row["ID Barang"] }}</td>
+          <td>{{ row["Uraian"] }}</td>
+          <td>{{ row["Jumlah Barang"] }}</td>
+          <td>{{ row["Harga Satuan"] }}</td>
+          <td>{{ row["Realisasi"] }}</td>
+          <td>{{ row["Sumber Data"] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {# Pagination controls #}
+  {% set args = request.args.to_dict() %}
+  {% set cur = pagination.page %}
+  {% set total = pagination.total_pages %}
+  {% if total > 1 %}
+    <div class="pagination" style="display:flex; gap:8px; align-items:center; justify-content:flex-end; margin-top:12px; flex-wrap:wrap;">
+      {% set _ = args.update({'page': (cur-1)}) %}
+      <a class="btn secondary" href="{{ url_for(request.endpoint, **args) }}" {% if cur <= 1 %}style="pointer-events:none; opacity:.5;"{% endif %}>‹ Prev</a>
+      {% set start = (cur-2) if (cur-2) > 1 else 1 %}
+      {% set end = (cur+2) if (cur+2) < total else total %}
+      {% for p in range(start, end+1) %}
+        {% set _ = args.update({'page': p}) %}
+        <a class="btn {% if p == cur %}primary{% else %}secondary{% endif %}" href="{{ url_for(request.endpoint, **args) }}">{{ p }}</a>
+      {% endfor %}
+      {% set _ = args.update({'page': (cur+1)}) %}
+      <a class="btn secondary" href="{{ url_for(request.endpoint, **args) }}" {% if cur >= total %}style="pointer-events:none; opacity:.5;"{% endif %}>Next ›</a>
+    </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}
